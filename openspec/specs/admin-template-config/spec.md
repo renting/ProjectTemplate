@@ -119,13 +119,13 @@ Symbol 定義：
 ### Requirement: 產生專案後顯示下一步指引
 `template.json` SHALL 定義 `postActions`，於 `dotnet new` 產生專案完成後顯示文字指引（`actionId: AC1156F7-BB77-4DB8-B28F-24EEBCCA1E5C`），SHALL NOT 自動執行任何指令（不使用 run script、restore 等會實際執行動作的 action）。
 
-指引內容 SHALL 至少涵蓋：前端 `npm install`、in-memory 示範帳密與更改提醒、API 文件（Scalar / OpenAPI）位置、以及選用的資料庫建置步驟（`db/schema.sql`、`db/seed.sql` 與 `ConnectionStrings:Default`）。
+指引內容 SHALL 至少涵蓋：前端 `pnpm install`（含未安裝 pnpm 時的提示）、in-memory 示範帳密與更改提醒、API 文件（Scalar / OpenAPI）位置、以及選用的資料庫建置步驟（`db/schema.sql`、`db/seed.sql` 與 `ConnectionStrings:Default`）。
 
 因目前 SDK 版本的 `manualInstructions` 陣列只會顯示第一項，全部步驟 SHALL 合併為單一 `text` 項目。
 
 #### Scenario: 產生專案後顯示指引
 - **WHEN** 使用者執行 `dotnet new vue-app-admin-dotnet10 -n MyApp`
-- **THEN** CLI 輸出包含 npm install、示範帳密、API 文件位置、schema/seed 等後續步驟的文字指引
+- **THEN** CLI 輸出包含 pnpm install、示範帳密、API 文件位置、schema/seed 等後續步驟的文字指引
 
 #### Scenario: 不自動執行指令
 - **WHEN** 使用者於無 SQL Server、無 Node.js 的環境產生專案

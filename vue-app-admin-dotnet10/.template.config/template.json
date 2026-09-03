@@ -113,7 +113,7 @@
       "description": "產生後的下一步指引",
       "actionId": "AC1156F7-BB77-4DB8-B28F-24EEBCCA1E5C",
       "manualInstructions": [
-        { "text": "1. 前端安裝套件：cd <專案名稱>.client && npm install  2. 目前 Auth/Menu 為 in-memory 示範資料，不需資料庫即可執行，登入帳密為 admin / password（僅供展示）  3. 後端 API 文件：Development 環境啟動後開 /scalar（Scalar UI），原始 OpenAPI 3.1 文件在 /openapi/v1.json  4.（選用）如需接上真實資料庫，可參考 db/schema.sql、db/seed.sql 建立資料庫與初始資料（seed 帳密為 admin / Admin@123），並將 appsettings.json 的 ConnectionStrings:Default 指向該資料庫；不論哪組帳密，正式環境上線前都請務必更改" }
+        { "text": "1. 前端安裝套件：cd <專案名稱>.client && pnpm install（本範本前端使用 pnpm，未安裝請先執行 npm i -g pnpm）  2. 目前 Auth/Menu 為 in-memory 示範資料，不需資料庫即可執行，登入帳密為 admin / password（僅供展示）  3. 後端 API 文件：Development 環境啟動後開 /scalar（Scalar UI），原始 OpenAPI 3.1 文件在 /openapi/v1.json  4.（選用）如需接上真實資料庫，可參考 db/schema.sql、db/seed.sql 建立資料庫與初始資料（seed 帳密為 admin / Admin@123），並將 appsettings.json 的 ConnectionStrings:Default 指向該資料庫；不論哪組帳密，正式環境上線前都請務必更改" }
       ]
     }
   ]

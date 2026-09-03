@@ -9,19 +9,128 @@
 
 ---
 
-## 安裝方式
+## 快速開始
 
-Clone 此儲存庫後，進入對應範本目錄安裝：
+### 前置需求
+
+| 需求 | 版本 | 備註 |
+|------|------|------|
+| [.NET SDK](https://dotnet.microsoft.com/download/dotnet/10.0) | 10.0 以上 | 兩個範本都宣告了 `sdk-version` 約束（`[10.0-*)`），舊版 SDK 不會看到範本 |
+| [Node.js](https://nodejs.org/) | `^20.19.0` 或 `>=22.12.0` | |
+| [pnpm](https://pnpm.io/installation) | 任意版本 | **admin 範本需要**，其前端 dev server 由 SpaProxy 以 `pnpm run dev` 啟動；未安裝請執行 `npm i -g pnpm`。demo 範本用 npm，不需要 pnpm |
+
+### 步驟 1：Clone 並安裝範本（每台機器只需做一次）
 
 ```bash
 git clone https://github.com/renting/ProjectTemplate.git
 cd ProjectTemplate
-dotnet new install .\<範本目錄>
+dotnet new install .\vue-app-admin-dotnet10
+dotnet new install .\vue-app-demo-dotnet10
 ```
 
-安裝完成後，使用 `dotnet new <簡短名稱> -n <專案名稱>` 建立新專案。
+確認裝好了：
 
-兩個範本都宣告了 `sdk-version` 約束（`[10.0-*)`），只有在 .NET 10 以上的 SDK 下才會出現在 `dotnet new list` 中。
+```bash
+dotnet new list vue-app
+```
+
+應該看到兩筆：
+
+```
+ASP.NET Core + Vue 3 (Admin, .NET 10)   vue-app-admin-dotnet10   [C#]
+ASP.NET Core + Vue 3 (Demo, .NET 10)    vue-app-demo-dotnet10    [C#]
+```
+
+> **不要刪掉或搬動 clone 下來的資料夾。** `dotnet new` 註冊的是「資料夾路徑」而非複製內容，資料夾一旦搬走，範本就會失效。搬動後需先 `dotnet new uninstall <舊路徑>` 再對新路徑重新 install。
+
+### 步驟 2：建立新專案
+
+切換到要放專案的目錄，擇一執行：
+
+```bash
+# 完整後台管理系統骨架（JWT 認證、Serilog、權限選單、DB schema、單元測試）
+dotnet new vue-app-admin-dotnet10 -n MyApp
+
+# 輕量前後端整合骨架（只有 Vue + Web API + OpenAPI）
+dotnet new vue-app-demo-dotnet10 -n MyApp
+```
+
+以 admin 範本為例，產生的結構：
+
+```
+MyApp/
+├── MyApp.slnx
+├── MyApp.Server/           後端 Web API
+├── myapp.client/           Vue 前端（目錄名自動轉小寫）
+├── MyApp.Server.Tests/     xUnit 測試
+├── DbScriptExporter/       DB script 匯出工具
+└── db/                     schema.sql / seed.sql
+```
+
+命名空間、專案檔名、各個 port、`Jwt:SignKey` 都已自動替換為此專案專屬的值，不同專案之間不會互相衝突。
+
+### 步驟 3：安裝前端套件
+
+```bash
+cd MyApp\myapp.client
+pnpm install      # demo 範本請改用 npm install
+cd ..
+```
+
+### 步驟 4：跑起來
+
+```bash
+dotnet run --project .\MyApp.Server\ --launch-profile https
+```
+
+SpaProxy 會自動把前端 dev server 一併拉起來，瀏覽器開啟 Scalar API 文件頁。
+
+用 Visual Studio 的話直接開 `MyApp.slnx` 按 F5 即可，Server 已是預設 startup project。
+
+admin 範本的登入帳密為 `admin` / `password`（in-memory 示範資料，**不需要資料庫**就能跑起來）。
+
+### 步驟 5：產生專案後必須處理的事項
+
+| 項目 | 說明 |
+|------|------|
+| 登入帳密 | `admin` / `password` 是寫死的示範帳號，正式環境務必更換 |
+| `Jwt:SignKey` | 已自動隨機化為「專案名稱 + GUID」，正式環境建議改由 User Secrets、環境變數或 Key Vault 提供 |
+| 資料庫（選用） | 預設為 in-memory 假資料，不接資料庫也能完整跑起來 |
+
+**接上真實資料庫的步驟：**
+
+1. 在 SQL Server 建立空白資料庫，依序執行 `db/schema.sql` 與 `db/seed.sql`
+2. 修改 `appsettings.json` 的 `ConnectionStrings:Default` 指向該資料庫
+3. 解開 `Features/Auth/UserRepository.cs`、`Features/Auth/GroupFeatureStore.cs`、`Features/Menu/MenuService.cs` 註解中現成的 Dapper SQL
+4. seed 建立的帳號為 `admin` / `Admin@123`，同樣務必更換
+5. `db/schema.sql` 中的 `Basic_Users.IdNumber` 標有 `TODO`，屬敏感個資欄位，請依專案需求決定去留
+
+### 範本更新後
+
+範本註冊的是資料夾路徑，因此 `git pull` 之後內容即自動生效，**一般情況不需要重新安裝**。只有這兩種情況需要處理：
+
+```bash
+# 資料夾搬移或改名
+dotnet new uninstall <舊路徑>
+dotnet new install <新路徑>
+
+# 想強制刷新快取
+dotnet new install .\vue-app-admin-dotnet10 --force
+```
+
+### 常見問題
+
+**安裝時出現「下列範本使用相同的身分識別」警告**
+
+代表同一個範本從兩個不同路徑各裝了一次（例如舊的測試目錄沒清掉）。`identity` 是範本在整台機器上的唯一鍵，重複時 `dotnet new` 只會啟用其中一個。執行不帶參數的 `dotnet new uninstall` 列出所有已安裝路徑，再把不要的那個解除安裝即可。
+
+**`dotnet new list` 看不到範本**
+
+先確認 `dotnet --version` 是否為 10.0 以上。兩個範本都有 SDK 版本約束，在舊版 SDK 下會被隱藏而不是報錯。
+
+**`Failed to launch the SPA development server 'pnpm run dev'` / 系統找不到指定的檔案**
+
+沒有安裝 pnpm。admin 範本的 SpaProxy 以 `pnpm run dev` 啟動前端，執行 `npm i -g pnpm` 後重跑即可。若已安裝 pnpm 仍失敗，確認 `<專案名稱>.client` 底下已有 `node_modules`（即步驟 3 的 `pnpm install` 已完成）。
 
 ---
 
@@ -167,6 +276,7 @@ dotnet run --project MyApp.Server
 | `Microsoft.Data.SqlClient` | 7.0.1 | 7.0.2 |
 | `Microsoft.SqlServer.SqlManagementObjects` | 181.25.0 | 181.36.0 |
 | 測試套件 | Test.Sdk 17.12 / xunit 2.9.2 / NSubstitute 5.3 / coverlet 6.0.2 | Test.Sdk 18.9 / xunit 2.9.3 / NSubstitute 6.2 / coverlet 10.0.1 |
+| Admin `postActions` 指引文字 | 寫 `npm install`，與實際的 `pnpm run dev` 不一致 | 改為 `pnpm install`，並提示未安裝時先 `npm i -g pnpm` |
 | Demo 範本方案檔 | `VueApp1.sln`（傳統格式） | `VueApp1.slnx`（XML 格式，與 admin 一致） |
 | Demo `template.json` `guids` | 三個 GUID（且與 `.sln` 實際值不符，未生效） | 移除（`.slnx` 不含 GUID） |
 | 範本短名稱 | `vue-app-admin-dotnet8`、`vue-app-demo` | `vue-app-admin-dotnet10`、`vue-app-demo-dotnet10` |
