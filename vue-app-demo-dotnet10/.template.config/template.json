@@ -1,0 +1,112 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "otis",
+  "classifications": [ "Web", "SPA", "Vue", "ASP.NET Core" ],
+  "identity": "VueAppDemoDotnet10.CSharp",
+  "name": "ASP.NET Core + Vue 3 (Demo, .NET 10)",
+  "shortName": "vue-app-demo-dotnet10",
+  "description": "ASP.NET Core 10 後端 + Vue 3 + TypeScript + Vite 前端整合範本（內建 OpenAPI + Scalar）",
+  "tags": {
+    "language": "C#",
+    "type": "solution"
+  },
+  "sourceName": "VueApp1",
+  "preferNameDirectory": true,
+  "constraints": {
+    "sdk-only-10": {
+      "type": "sdk-version",
+      "args": "[10.0-*)"
+    }
+  },
+  "symbols": {
+    "nameLower": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "lowerCase",
+      "fileRename": "vueapp1"
+    },
+    "HttpPort": {
+      "type": "generated",
+      "generator": "port",
+      "parameters": {
+        "low": 18100,
+        "high": 18199,
+        "fallback": "18100"
+      },
+      "replaces": "5159"
+    },
+    "HttpsPort": {
+      "type": "generated",
+      "generator": "port",
+      "parameters": {
+        "low": 18200,
+        "high": 18299,
+        "fallback": "18200"
+      },
+      "replaces": "7173"
+    },
+    "IisPort": {
+      "type": "generated",
+      "generator": "port",
+      "parameters": {
+        "low": 18300,
+        "high": 18399,
+        "fallback": "18300"
+      },
+      "replaces": "21655"
+    },
+    "IisSslPort": {
+      "type": "generated",
+      "generator": "port",
+      "parameters": {
+        "low": 18400,
+        "high": 18499,
+        "fallback": "18400"
+      },
+      "replaces": "44385"
+    },
+    "SpaPort": {
+      "type": "generated",
+      "generator": "port",
+      "parameters": {
+        "low": 18500,
+        "high": 18599,
+        "fallback": "18500"
+      },
+      "replaces": "23288"
+    }
+  },
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "exclude": [
+            ".git/**",
+            ".vs/**",
+            ".template.config/**",
+            "**/bin/**",
+            "**/obj/**",
+            "**/dist/**",
+            "**/node_modules/**",
+            "**/*.user",
+            "**/.DS_Store",
+            "**/package-lock.json",
+            "**/pnpm-lock.yaml",
+            "**/pnpm-workspace.yaml",
+            "**/logs/**"
+          ]
+        }
+      ]
+    }
+  ],
+  "postActions": [
+    {
+      "id": "next-steps",
+      "description": "產生後的下一步指引",
+      "actionId": "AC1156F7-BB77-4DB8-B28F-24EEBCCA1E5C",
+      "manualInstructions": [
+        { "text": "1. 前端安裝套件：cd <專案名稱>.client && npm install  2. 後端 API 文件：Development 環境啟動後開 /scalar（Scalar UI），原始 OpenAPI 3.1 文件在 /openapi/v1.json" }
+      ]
+    }
+  ]
+}

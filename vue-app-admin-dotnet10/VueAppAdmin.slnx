@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="VueAppAdmin.Server\VueAppAdmin.Server.csproj" />
+  <Project Path="vueappadmin.client\vueappadmin.client.esproj" />
+  <Project Path="VueAppAdmin.Server.Tests/VueAppAdmin.Server.Tests.csproj" />
+  <Project Path="DbScriptExporter\DbScriptExporter.csproj" />
+</Solution>

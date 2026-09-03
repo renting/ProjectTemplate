@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><!-- [CHANGE_NAME] --></title>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, theme: 'default', securityLevel: 'loose' });
+</script>
+<style>
+/* ── Design tokens ── */
+:root {
+  --red: #dc3545; --red-bg: #fff1f1; --red-bd: #f8c4c7;
+  --green: #16a34a; --green-bg: #f0fdf4; --green-bd: #a3d9b5;
+  --blue: #2563eb; --blue-bg: #eff6ff; --blue-bd: #bfdbfe;
+  --yellow: #d97706; --yellow-bg: #fffbeb; --yellow-bd: #fde68a;
+  --gray: #6b7280; --gray-bg: #f9fafb; --gray-bd: #e5e7eb;
+  --text: #111827; --muted: #6b7280; --border: #e5e7eb;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #f1f5f9; color: var(--text); font: 13px/1.6 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+/* ── Header ── */
+.hdr { background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%); color: #fff; padding: 22px 32px; }
+.hdr h1 { font-size: 20px; font-weight: 700; letter-spacing: -.3px; margin-bottom: 4px; }
+.hdr .sub { color: rgba(255,255,255,.55); font-size: 12px; }
+.hdr .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.chip { padding: 2px 9px; border-radius: 4px; font-size: 11px; font-weight: 600;
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2); color: rgba(255,255,255,.85); }
+
+/* ── Layout ── */
+.wrap { max-width: 1320px; margin: 0 auto; padding: 24px; display: flex; flex-direction: column; gap: 22px; }
+.sec-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--muted); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+
+/* ── Grid helpers ── */
+.grid-2   { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3   { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.grid-auto { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+
+/* ── Card ── */
+.card { background: #fff; border-radius: 10px; border: 1px solid var(--border);
+  padding: 18px; box-shadow: 0 1px 3px rgba(0,0,0,.05); }
+.card-title { font-size: 12px; font-weight: 700; margin-bottom: 10px; }
+
+/* ── Compare panels (Before / After) ── */
+.cmp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.cmp-panel { border-radius: 10px; border: 2px solid; overflow: hidden; background: #fff; }
+.cmp-panel.before { border-color: var(--red); }
+.cmp-panel.after  { border-color: var(--green); }
+.cmp-hdr { padding: 9px 14px; font-weight: 700; font-size: 12px; }
+.before .cmp-hdr { background: var(--red-bg);   color: #7f1d1d; }
+.after  .cmp-hdr { background: var(--green-bg); color: #14532d; }
+.cmp-body { padding: 12px; }
+
+/* ── Badges ── */
+.badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.b-red    { background: var(--red-bg);    color: var(--red);    border: 1px solid var(--red-bd); }
+.b-green  { background: var(--green-bg);  color: var(--green);  border: 1px solid var(--green-bd); }
+.b-blue   { background: var(--blue-bg);   color: var(--blue);   border: 1px solid var(--blue-bd); }
+.b-yellow { background: var(--yellow-bg); color: var(--yellow); border: 1px solid var(--yellow-bd); }
+.b-gray   { background: var(--gray-bg);   color: var(--gray);   border: 1px solid var(--gray-bd); }
+
+/* ── Inline code ── */
+code { font: 11px/1 'SFMono-Regular', Consolas, monospace;
+  background: #f3f4f6; padding: 1px 5px; border-radius: 3px; color: #be123c; }
+
+/* ── Goal / Non-goal lists ── */
+.goal-list, .ng-list { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.goal-item, .ng-item { display: flex; gap: 8px; padding: 7px 10px; border-radius: 6px; font-size: 12px; align-items: flex-start; }
+.goal-item { background: var(--green-bg); border: 1px solid var(--green-bd); color: #14532d; }
+.goal-item::before { content: '✓'; font-weight: 700; flex-shrink: 0; color: var(--green); }
+.ng-item   { background: var(--gray-bg);  border: 1px solid var(--gray-bd);  color: var(--muted); }
+.ng-item::before   { content: '✗'; font-weight: 700; flex-shrink: 0; }
+
+/* ── Decision / Risk items ── */
+.dec-item  { padding: 11px 13px; border-radius: 7px; background: var(--blue-bg);   border: 1px solid var(--blue-bd);   margin-bottom: 10px; }
+.risk-item { padding: 11px 13px; border-radius: 7px; background: var(--yellow-bg); border: 1px solid var(--yellow-bd); margin-bottom: 10px; }
+.dec-title  { font-weight: 700; font-size: 12px; color: #1d4ed8; margin-bottom: 5px; }
+.risk-title { font-weight: 700; font-size: 12px; color: #92400e; margin-bottom: 5px; }
+.item-body  { font-size: 12px; color: #374151; }
+.alt { margin-top: 7px; font-size: 11px; color: var(--muted); padding: 5px 8px; background: #fff; border-radius: 4px; border-left: 3px solid var(--gray-bd); }
+.mitigation { margin-top: 7px; font-size: 11px; color: var(--green); padding: 5px 8px; background: var(--green-bg); border-radius: 4px; }
+
+/* ── Table ── */
+.data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.data-table th { background: #f8fafc; padding: 8px 12px; font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .5px; color: var(--muted); border-bottom: 2px solid var(--border); text-align: left; }
+.data-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--gray-bg); }
+
+/* ── Entry card snippets / notes ── */
+.snippet { margin-top: 6px; padding: 6px 8px; background: #f8fafc; border-radius: 5px;
+  font: 11px/1.5 'SFMono-Regular', Consolas, monospace; color: #374151;
+  border-left: 3px solid var(--gray-bd); }
+.snippet.hot { border-left-color: var(--yellow); background: var(--yellow-bg); }
+.entry-note { margin-top: 6px; font-size: 11px; color: var(--muted); }
+
+/* ── Mermaid ── */
+.mermaid { text-align: center; }
+.mermaid svg { max-width: 100%; }
+
+/* ── Footer ── */
+.footer { text-align: center; padding: 12px 0 8px; font-size: 11px; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══════════════════════════════════════════════════════
+  Required fields: h1 (change name), .sub (one-line description)
+  Add .chip elements for key metadata (files affected, scope, etc.)
+═══════════════════════════════════════════════════════════════════ -->
+<div class="hdr">
+  <div>
+    <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:6px;font-family:monospace">
+      openspec · design.md
+    </div>
+    <h1><!-- [CHANGE_NAME] --></h1>
+    <div class="sub"><!-- [ONE_LINE_DESCRIPTION] --></div>
+    <div class="chips">
+      <!-- Add .chip spans for metadata: affected files, scope, constraints -->
+      <!-- <span class="chip">example chip</span> -->
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+<!-- ═══ SECTIONS GO HERE ═══════════════════════════════════════════
+  Available section patterns:
+
+  ① SCOPE CARD (Goals / Non-Goals)
+  ② BEFORE vs AFTER (cmp-grid, two Mermaid flowcharts)
+  ③ DETAIL CARDS (entry points, states, etc. — grid-auto or grid-3)
+  ④ DIAGRAM SECTION (full-width Mermaid — class, ER, sequence, state)
+  ⑤ MAPPING TABLE (for variable→field or input→output mappings)
+  ⑥ DECISIONS + RISKS (grid-2 with dec-item / risk-item)
+  ⑦ BACKGROUND LOGIC (shared/unchanged algorithm — context for Before vs After)
+  ⑧ MINDMAP (conceptual overview — change scope at a glance, feature taxonomy)
+
+  See comments below each pattern example for usage guidance.
+═══════════════════════════════════════════════════════════════════ -->
+
+<!-- EXAMPLE ⑦ — Background logic (shared/unchanged logic, context for the change)
+  Use when the Context section describes an algorithm that won't change but is
+  essential to understand the Before/After. Label it "（本次不修改）" so reviewer
+  knows it's read-only context, not something being altered. -->
+<!--
+<section>
+  <div class="sec-title">會員等級判斷邏輯（各入口共用，本次不修改）</div>
+  <div class="card">
+    <div class="mermaid">
+flowchart LR
+    A(["訂單建立"]) - -> B{"channel = 'WEB' ?"}
+    B -- 否 - -> S["MemberTier = 'S'"]
+    B -- 是 - -> C{"order_total >= 1000 ?"}
+    C -- 是 - -> L["MemberTier = 'P'"]
+    C -- 否 - -> S2["MemberTier = 'S'"]
+    L - -> Y(["isPremium = 'Y'"])
+    S - -> N(["isPremium = 'N'"])
+    S2 - -> N
+    style L fill:#fef9c3,stroke:#ca8a04
+    style Y fill:#dcfce7,stroke:#16a34a,color:#14532d,font-weight:bold
+    style N fill:#f3f4f6,stroke:#9ca3af
+    </div>
+  </div>
+</section>
+-->
+
+<!-- EXAMPLE ① — Scope card (Goals / Non-Goals) -->
+<!--
+<section>
+  <div class="sec-title">範圍</div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title" style="color:var(--green)">Goals</div>
+      <div class="goal-list">
+        <div class="goal-item">具體目標一</div>
+        <div class="goal-item">具體目標二</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--muted)">Non-Goals</div>
+      <div class="ng-list">
+        <div class="ng-item">明確排除項目一</div>
+        <div class="ng-item">明確排除項目二</div>
+      </div>
+    </div>
+  </div>
+</section>
+-->
+
+<!-- EXAMPLE ② — Before vs After (most important section, always include) -->
+<!--
+<section>
+  <div class="sec-title">Before vs After</div>
+  <div class="cmp-grid">
+    <div class="cmp-panel before">
+      <div class="cmp-hdr">⚠ Before — 說明舊狀態或問題</div>
+      <div class="cmp-body">
+        <div class="mermaid">
+flowchart TD
+    A["節點 A"] - -> B["節點 B"]
+    B - -> C["結果（有問題）"]
+    style C fill:#fce8e8,stroke:#dc3545,color:#7f1d1d
+        </div>
+      </div>
+    </div>
+    <div class="cmp-panel after">
+      <div class="cmp-hdr">✅ After — 說明新狀態或改善</div>
+      <div class="cmp-body">
+        <div class="mermaid">
+flowchart TD
+    A["節點 A"] - -> B["節點 B（已修正）"]
+    B - -> C["結果（正確）"]
+    style C fill:#dcfce7,stroke:#16a34a,color:#14532d
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+-->
+
+<!-- EXAMPLE ③ — Detail cards grid (entry points / items)
+  Each card has: name + layer, Before/After badges, source variable,
+  code snippet showing the actual expression, and an implementation note.
+  Use .snippet for SQL/code, .snippet.hot for easy wins (yellow border).
+  Use .entry-note for ℹ hints; use .badge.b-yellow for ⚠ risks. -->
+<!--
+<section>
+  <div class="sec-title">5 個入口 — 逐一對照</div>
+  <div class="grid-auto">
+    <div class="card">
+      <div style="font-family:monospace;font-size:11px;font-weight:600;word-break:break-all">SP_Order_Create</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:3px">SQL SP · INSERT order_info</div>
+      <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
+        <span class="badge b-red">INSERT 缺 isPremium</span>
+      </div>
+      <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
+        <span class="badge b-green">INSERT + isPremium</span>
+      </div>
+      <div style="margin-top:8px;font-size:11px">來源 <code>@IsPremium (BIT)</code></div>
+      <div class="snippet">
+        CASE WHEN @IsPremium=1<br>
+        &nbsp;THEN 'Y' ELSE 'N' END
+      </div>
+      <div class="entry-note">ℹ 已算好，直接引用</div>
+    </div>
+    <div class="card">
+      <div style="font-family:monospace;font-size:11px;font-weight:600;word-break:break-all">OrderService.cs</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:3px">C# · INSERT order_info</div>
+      <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
+        <span class="badge b-red">欄位清單缺 isPremium</span>
+      </div>
+      <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
+        <span class="badge b-green">INSERT + isPremium</span>
+      </div>
+      <div style="margin-top:8px;font-size:11px">來源 <code>@isPremium</code></div>
+      <div class="snippet hot">⚡ 參數已在 param 物件<br>只需補欄位宣告</div>
+      <div class="entry-note" style="margin-top:6px">
+        <span class="badge b-yellow">⚠ 需確認動態 SQL 相容</span>
+      </div>
+    </div>
+  </div>
+</section>
+-->
+
+<!-- EXAMPLE ④ — Full-width diagram (class / ER / sequence / state) -->
+<!--
+<section>
+  <div class="sec-title">資料模型 / 類別關係</div>
+  <div class="card">
+    <div class="mermaid">
+erDiagram
+    TABLE_A {
+        int id PK
+        varchar field1
+    }
+    TABLE_A ||--o{ TABLE_B : "has"
+    </div>
+  </div>
+</section>
+-->
+
+<!-- EXAMPLE ⑤ — Mapping table + diagram side by side -->
+<!--
+<section>
+  <div class="sec-title">變數對應</div>
+  <div class="grid-2">
+    <div class="card">
+      <table class="data-table">
+        <thead><tr><th>來源</th><th>→</th><th>目標值</th></tr></thead>
+        <tbody>
+          <tr><td><code>@var = 1</code></td><td>→</td><td><span class="badge b-green">'Y'</span></td></tr>
+          <tr><td><code>@var = 0</code></td><td>→</td><td><span class="badge b-gray">'N'</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="mermaid">
+flowchart LR
+    V["@var"] - ->|"1 → 'Y'"| Y["目標 = Y"]
+    V - ->|"0 → 'N'"| N["目標 = N"]
+      </div>
+    </div>
+  </div>
+</section>
+-->
+
+<!-- EXAMPLE ⑧ — Mindmap (conceptual overview / change scope at a glance)
+  Use when the change spans multiple dimensions or needs a "scope at a glance" view.
+  Place after the Scope section (before Before vs After), or as a standalone overview.
+  Indentation (2 spaces per level) is the ONLY structure — no arrows, no style, no classDef.
+  root((...)) = circle  root[...] = box  root(((...))).= double circle -->
+<!--
+<section>
+  <div class="sec-title">本次異動範圍</div>
+  <div class="card">
+    <div class="mermaid">
+mindmap
+  root((Change Name))
+    Topic A
+      Sub-item 1
+      Sub-item 2
+    Topic B
+      Sub-item 3
+    </div>
+  </div>
+</section>
+-->
+
+<!-- EXAMPLE ⑥ — Decisions + Risks -->
+<!--
+<section>
+  <div class="sec-title">技術決策 ／ 風險</div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title" style="color:var(--blue)">技術決策</div>
+      <div class="dec-item">
+        <div class="dec-title">決策 1 ｜選擇方案名稱</div>
+        <div class="item-body">說明為什麼選這個方案。</div>
+        <div class="alt">✗ 棄用：其他方案 → 原因</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--yellow)">風險</div>
+      <div class="risk-item">
+        <div class="risk-title">⚠ 風險名稱</div>
+        <div class="item-body">風險說明。</div>
+        <div class="mitigation">→ 緩解措施</div>
+      </div>
+    </div>
+  </div>
+</section>
+-->
+
+</div><!-- /wrap -->
+
+<div class="footer"><!-- [CHANGE_PATH] -->/design.html</div>
+</body>
+</html>

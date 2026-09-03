@@ -1,0 +1,120 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "otis",
+  "classifications": [ "Web", "SPA", "Vue", "ASP.NET Core" ],
+  "identity": "VueAppAdminDotnet10.CSharp",
+  "name": "ASP.NET Core + Vue 3 (Admin, .NET 10)",
+  "shortName": "vue-app-admin-dotnet10",
+  "description": "ASP.NET Core 10 後端 + Vue 3 + TypeScript + Vite 後台管理系統範本（含 JWT 認證、Serilog、內建 OpenAPI + Scalar、PrimeVue、Bootstrap）",
+  "tags": {
+    "language": "C#",
+    "type": "solution"
+  },
+  "sourceName": "VueAppAdmin",
+  "preferNameDirectory": true,
+  "constraints": {
+    "sdk-only-10": {
+      "type": "sdk-version",
+      "args": "[10.0-*)"
+    }
+  },
+  "symbols": {
+    "nameLower": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "lowerCase",
+      "fileRename": "vueappadmin"
+    },
+    "HttpPort": {
+      "type": "generated",
+      "generator": "port",
+      "parameters": {
+        "low": 17100,
+        "high": 17199,
+        "fallback": "17100"
+      },
+      "replaces": "5159"
+    },
+    "HttpsPort": {
+      "type": "generated",
+      "generator": "port",
+      "parameters": {
+        "low": 17200,
+        "high": 17299,
+        "fallback": "17200"
+      },
+      "replaces": "7173"
+    },
+    "IisPort": {
+      "type": "generated",
+      "generator": "port",
+      "parameters": {
+        "low": 17300,
+        "high": 17399,
+        "fallback": "17300"
+      },
+      "replaces": "21655"
+    },
+    "IisSslPort": {
+      "type": "generated",
+      "generator": "port",
+      "parameters": {
+        "low": 17400,
+        "high": 17499,
+        "fallback": "17400"
+      },
+      "replaces": "44385"
+    },
+    "SpaPort": {
+      "type": "generated",
+      "generator": "port",
+      "parameters": {
+        "low": 17500,
+        "high": 17599,
+        "fallback": "17500"
+      },
+      "replaces": "23288"
+    },
+    "JwtSecret": {
+      "type": "generated",
+      "generator": "guid",
+      "parameters": {
+        "defaultFormat": "n"
+      },
+      "replaces": "REPLACE_WITH_A_STRONG_SECRET_KEY_AT_LEAST_32_CHARS"
+    }
+  },
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "exclude": [
+            ".git/**",
+            ".vs/**",
+            ".template.config/**",
+            "**/bin/**",
+            "**/obj/**",
+            "**/dist/**",
+            "**/node_modules/**",
+            "**/*.user",
+            "**/.DS_Store",
+            "**/package-lock.json",
+            "**/pnpm-lock.yaml",
+            "**/pnpm-workspace.yaml",
+            "**/logs/**"
+          ]
+        }
+      ]
+    }
+  ],
+  "postActions": [
+    {
+      "id": "next-steps",
+      "description": "產生後的下一步指引",
+      "actionId": "AC1156F7-BB77-4DB8-B28F-24EEBCCA1E5C",
+      "manualInstructions": [
+        { "text": "1. 前端安裝套件：cd <專案名稱>.client && npm install  2. 目前 Auth/Menu 為 in-memory 示範資料，不需資料庫即可執行，登入帳密為 admin / password（僅供展示）  3. 後端 API 文件：Development 環境啟動後開 /scalar（Scalar UI），原始 OpenAPI 3.1 文件在 /openapi/v1.json  4.（選用）如需接上真實資料庫，可參考 db/schema.sql、db/seed.sql 建立資料庫與初始資料（seed 帳密為 admin / Admin@123），並將 appsettings.json 的 ConnectionStrings:Default 指向該資料庫；不論哪組帳密，正式環境上線前都請務必更改" }
+      ]
+    }
+  ]
+}
